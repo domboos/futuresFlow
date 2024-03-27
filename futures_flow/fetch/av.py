@@ -10,7 +10,7 @@ import statsmodels as sm
 
 
 def header_string(header, crop, wtype):
-    if header is 'crop':
+    if header == 'crop':
         header = crop
     elif header in ('wtype', 'type'):
         header = wtype
@@ -235,7 +235,8 @@ def getc(engine, crop, ctype, category=None, region='United States', unit=None, 
     name_str = " AS " + ctype.replace(" ","_").replace(",","").replace(".","").replace(")","").replace("(","") + " "
 
     w = pd.read_sql_query("SELECT DISTINCT date, qty" + name_str + rd_str + " FROM dbo.usda_condition_data dt "
-                          "INNER JOIN dbo.vw_usda_condition_desc dc ON dc.usda_id = dt.usda_id "
+                          "INNER JOIN dbo.usda_condition_desc_region r ON dt.usda_id = r.usda_id "
+                          "INNER JOIN dbo.usda_condition_desc dc ON dc.usda_desc_id = r.usda_desc_id "
                           "WHERE type = '" + ctype + "' "
                           "AND crop = '" + crop + "' "
                           "AND region = '" + region + "' "

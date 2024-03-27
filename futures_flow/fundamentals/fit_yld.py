@@ -1,20 +1,19 @@
 import numpy as np
 import pandas as pd
-import cfunctions as cf
 import sqlalchemy as sq
-import av
+import futures_flow.fetch.av as av
+import futures_flow.ridge.ridge_functions as ridge
+from futures_flow.private.engines import *
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-import mwh_functions
 from pandas.plotting import register_matplotlib_converters
-ed = '2019-12-31'
-cp = 'Soybeans'
+ed = '2018-12-31'
+cp = 'Corn'
+
+engine = dbo_engine()
 
 
-engine = mwh_functions.mwh_engine()
-
-
-lt_yld = av.getlt(engine, crop=cp, type='Yield per Harvested Acre', start_yr=1999, header='yld')
+lt_yld = av.getlt(engine, crop=cp, type='Yield per Harvested Acre', start_yr=1990, header='yld')
 df = pd.DataFrame({'year': lt_yld.index.tolist(),
                    'month': 2,
                    'day': 28})
@@ -48,12 +47,15 @@ comb['year'] = comb.index.year
 print(comb.to_string())
 
 # results = sm.ols(formula='xyld ~ good + poor', data=comb).fit()
-gamma = cf.getGamma(5, gammatype='flat')
+gamma = ridge.getGamma(5, gammatype='flat')
+
 #gamma = np.eye(5)
 
 x0 = comb.loc[:, ['excellent', 'good', 'fair', 'poor', 'very_poor']].values
 y0 = comb.loc[:, ['xyld']]
-alpha = cf.getAlpha(alpha_type='loocv', y=y0, x=x0, gma=gamma, start=10)
+alpha = ridge.get_alpha(criteria='loocv', y=y0, x=x0, gma=gamma, alpha_start=100, scale=10000000)
+alpha = 500
+print(alpha)
 print(alpha * gamma)
 x = np.concatenate((comb.loc[:, ['excellent', 'good', 'fair', 'poor', 'very_poor']], alpha * gamma), axis=0)
 y = np.concatenate((comb.loc[:, ['xyld']], np.zeros((gamma.shape[0], 1))))

@@ -217,7 +217,7 @@ for a, b in results_oos.iterrows():
         Gamma0 = np.concatenate((_Gamma0, np.zeros((days, noof_events))), axis=1)
         alpha3 = alphasW.loc[a]['alpha_wls2']
         if alpha_method == 'estimate':
-            alpha3 = getAlpha(alpha_type=cv_method, y=y_fit, x=x_fit, gma=Gamma0, start=alpha3,
+            alpha3 = get_Alpha(alpha_type=cv_method, y=y_fit, x=x_fit, gma=Gamma0, start=alpha3,
                               scale=scale)[0]
         results_oos.loc[a]['alpha_wls2'] = alpha3
         y_values3 = np.concatenate((y_fit, np.zeros((days, 1))), axis=0)

@@ -57,7 +57,7 @@ def get_alpha(criteria, y, x, gma=np.ndarray, alpha_start: float = 100, scale: f
         return res.x
     else:
         print(f"optimization was not successful: alpha has the value of: 1")
-        return 1
+        return alpha_start
 
 
 def press(alpha, _y: np.ndarray, _x: np.ndarray, gamma_mat):
